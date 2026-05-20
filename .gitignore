@@ -1,15 +1,33 @@
+# Arquivos de Build e do Gradle
+.gradle/
+build/
+**/build/
+*.log
+
+# Configurações do Android Studio (.idea)
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+.shelf/
+vcs.xml
+]
+
+# Binários e Pacotes do Android (APKs / AABs)
+*.apk
+*.aab
+output-metadata.json
+
+
+# Configurações Locais e Segurança
 local.properties
+*.jks
+*.keystore
+google-services.json
+
+# Arquivos do Sistema Operacional e Profiling
+.DS_Store
+Thumbs.db
+Desktop.ini
+captures/
+.externalNativeBuild/
+.cxx/
+*.hprof
