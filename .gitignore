@@ -9,7 +9,6 @@ build/
 *.iml
 .shelf/
 vcs.xml
-]
 
 # Binários e Pacotes do Android (APKs / AABs)
 *.apk
