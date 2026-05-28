@@ -47,8 +47,8 @@ fun TransactionItem(transaction: Transaction) {
         },
         trailingContent = {
             Text(
-                text       = if (isExpense) "- R$ %.2f".format(transaction.amount)
-                else "+ R$ %.2f".format(transaction.amount),
+                text       = if (isExpense) "- %.2f".format(transaction.amount)
+                else "  %.2f".format(transaction.amount),
                 style      = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
             )
