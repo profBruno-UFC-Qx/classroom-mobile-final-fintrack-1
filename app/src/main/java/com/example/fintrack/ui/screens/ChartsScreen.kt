@@ -5,6 +5,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -13,12 +17,15 @@ import com.example.fintrack.ui.components.charts.CardLineChart
 import com.example.fintrack.ui.components.charts.CardPieChartAndCategories
 import com.example.fintrack.ui.components.charts.FintrackData
 import com.example.fintrack.ui.components.charts.MonthEntry
+import com.example.fintrack.ui.components.charts.MonthYearSelector
+import java.time.YearMonth
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChartsScreen(modifier: Modifier = Modifier) {
 
     val scrollState = rememberScrollState()
+    var selectedDate by remember{ mutableStateOf(YearMonth.now()) }
 
     val mockLineChart = listOf(
         MonthEntry("Jan", 1240.23),
@@ -39,17 +46,22 @@ fun ChartsScreen(modifier: Modifier = Modifier) {
         modifier
             .verticalScroll(scrollState),
     ) {
+        MonthYearSelector(
+            selectedDate = selectedDate,
+            onDateSelected = { selectedDate = it },
+            modifier = Modifier
+                .padding(8.dp)
+        )
+
         CardLineChart(
             modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .padding(top = 8.dp),
+                .padding(horizontal = 8.dp),
             entries = mockLineChart,
         )
 
         CardPieChartAndCategories(
             modifier = Modifier
-                .padding(horizontal = 8.dp)
-                .padding(vertical = 8.dp),
+                .padding(8.dp),
             entries = mockPieChart,
             )
     }
