@@ -10,15 +10,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -27,26 +29,30 @@ import com.example.fintrack.model.MonthlySummary
 import com.example.fintrack.model.Transaction
 import com.example.fintrack.model.TransactionCategory
 import com.example.fintrack.model.TransactionType
+import com.example.fintrack.ui.components.AddTransactionBottomSheet
 import com.example.fintrack.ui.components.BottomBar
 import com.example.fintrack.ui.components.SummaryCard
 import com.example.fintrack.ui.components.TransactionItem
 import com.example.fintrack.ui.screens.viewmodel.HomeUiState
 import com.example.fintrack.ui.screens.viewmodel.HomeViewModel
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.ui.text.font.FontWeight
-
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    HomeContent(uiState = uiState)
+    HomeContent(
+        uiState          = uiState,
+        onAddTransaction = { viewModel.addTransaction(it) }
+    )
 }
 
 @Composable
-private fun HomeContent(uiState: HomeUiState) {
-    var currentScreen by remember { mutableStateOf("home") }
+private fun HomeContent(
+    uiState          : HomeUiState,
+    onAddTransaction : (Transaction) -> Unit
+) {
+    var currentScreen   by remember { mutableStateOf("home") }
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
         bottomBar = {
@@ -59,7 +65,7 @@ private fun HomeContent(uiState: HomeUiState) {
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* TODO: tela de adicionar transação */ },
+                onClick = { showBottomSheet = true },
                 shape   = CircleShape
             ) {
                 Icon(Icons.Outlined.Add, contentDescription = "Adicionar transação")
@@ -79,16 +85,25 @@ private fun HomeContent(uiState: HomeUiState) {
             }
             item {
                 Text(
-                    text = "Transactions",
-                    style = MaterialTheme.typography.bodyLarge,
+                    text       = "Transactions",
+                    style      = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(16.dp)
+                    modifier   = Modifier.padding(16.dp)
                 )
             }
             items(items = uiState.transactions, key = { it.id }) { transaction ->
                 TransactionItem(transaction = transaction)
-
             }
+        }
+
+        if (showBottomSheet) {
+            AddTransactionBottomSheet(
+                onDismiss = { showBottomSheet = false },
+                onConfirm = { transaction ->
+                    onAddTransaction(transaction)
+                    showBottomSheet = false
+                }
+            )
         }
     }
 }
@@ -110,5 +125,5 @@ fun HomeScreenPreview() {
         )
     )
 
-    HomeContent(uiState = mockState)
+    HomeContent(uiState = mockState, onAddTransaction = {})
 }

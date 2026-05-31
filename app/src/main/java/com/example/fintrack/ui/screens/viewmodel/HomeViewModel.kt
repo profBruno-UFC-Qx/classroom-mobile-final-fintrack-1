@@ -7,6 +7,7 @@ import com.example.fintrack.model.TransactionCategory
 import com.example.fintrack.model.TransactionType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 data class HomeUiState(
     val summary      : MonthlySummary,
@@ -18,6 +19,24 @@ class HomeViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(initialState())
     val uiState = _uiState.asStateFlow()
 
+    fun addTransaction(transaction: Transaction) {
+        _uiState.update { current ->
+            val updated = listOf(transaction) + current.transactions
+            current.copy(
+                transactions = updated,
+                summary      = buildSummary(updated, current.summary.month)
+            )
+        }
+    }
+
+    private fun buildSummary(transactions: List<Transaction>, month: String): MonthlySummary {
+        return MonthlySummary(
+            month    = month,
+            expenses = transactions.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount },
+            income   = transactions.filter { it.type == TransactionType.INCOME  }.sumOf { it.amount }
+        )
+    }
+
     private fun initialState(): HomeUiState {
         val transactions = listOf(
             Transaction(1, "Taxi",     45.00,   TransactionType.EXPENSE, TransactionCategory.TRANSPORT),
@@ -27,13 +46,9 @@ class HomeViewModel : ViewModel() {
             Transaction(5, "Food",     62.00,   TransactionType.EXPENSE, TransactionCategory.FOOD),
             Transaction(6, "Food",     38.90,   TransactionType.EXPENSE, TransactionCategory.FOOD)
         )
-
-        val summary = MonthlySummary(
-            month    = "May",
-            expenses = transactions.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount },
-            income   = transactions.filter { it.type == TransactionType.INCOME  }.sumOf { it.amount }
+        return HomeUiState(
+            summary      = buildSummary(transactions, "May"),
+            transactions = transactions
         )
-
-        return HomeUiState(summary = summary, transactions = transactions)
     }
 }
