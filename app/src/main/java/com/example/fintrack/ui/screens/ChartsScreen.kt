@@ -1,9 +1,9 @@
 package com.example.fintrack.ui.screens
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,12 +14,12 @@ import com.example.fintrack.ui.components.charts.CardPieChartAndCategories
 import com.example.fintrack.ui.components.charts.FintrackData
 import com.example.fintrack.ui.components.charts.MonthEntry
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChartsScreen(modifier: Modifier = Modifier) {
+
+    val scrollState = rememberScrollState()
+
     val mockLineChart = listOf(
         MonthEntry("Jan", 1240.23),
         MonthEntry("Fev", 1343.54),
@@ -36,19 +36,20 @@ fun ChartsScreen(modifier: Modifier = Modifier) {
     )
 
     Column(
-        modifier.padding(top = 8.dp),
+        modifier
+            .verticalScroll(scrollState),
     ) {
         CardLineChart(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .padding(top = 8.dp),
             entries = mockLineChart,
         )
 
-        Spacer(
-            modifier = Modifier.height(16.dp)
-        )
-        
         CardPieChartAndCategories(
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier
+                .padding(horizontal = 8.dp)
+                .padding(vertical = 8.dp),
             entries = mockPieChart,
             )
     }
