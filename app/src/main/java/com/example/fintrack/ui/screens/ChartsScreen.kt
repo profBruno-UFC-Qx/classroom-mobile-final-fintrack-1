@@ -9,10 +9,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.fintrack.ui.components.CardLineChart
-import com.example.fintrack.ui.components.CardPieChartAndCategories
-import com.example.fintrack.ui.components.FintrackData
-import com.example.fintrack.ui.components.MonthEntry
+import com.example.fintrack.ui.components.charts.CardLineChart
+import com.example.fintrack.ui.components.charts.CardPieChartAndCategories
+import com.example.fintrack.ui.components.charts.FintrackData
+import com.example.fintrack.ui.components.charts.MonthEntry
 
 @Preview(
     showBackground = true,

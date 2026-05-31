@@ -1,9 +1,8 @@
-package com.example.fintrack.ui.components
+package com.example.fintrack.ui.components.charts
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,9 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -25,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fintrack.R
@@ -43,10 +38,7 @@ data class FintrackData(
 )
 
 @Composable
-fun PieChart(
-    data: List<FintrackData>,
-    modifier: Modifier = Modifier,
-) {
+fun PieChart(data: List<FintrackData>, modifier: Modifier = Modifier) {
     val modelProducer = remember { PieChartModelProducer() }
 
     LaunchedEffect(key1 = data) {
@@ -77,10 +69,7 @@ fun PieChart(
 }
 
 @Composable
-fun Categories(
-    data: List<FintrackData>,
-    modifier: Modifier = Modifier
-) {
+fun Categories(data: List<FintrackData>, modifier: Modifier = Modifier) {
     val totalValue = remember(data) { data.sumOf { it.value }.toFloat().coerceAtLeast(1f) }
 
     FlowRow(
@@ -111,28 +100,10 @@ fun Categories(
 }
 
 @Composable
-fun CardPieChartAndCategories(
-    entries: List<FintrackData>,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceContainerLow),
-        shape = MaterialTheme.shapes.large,
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(R.string.pie_chart_title),
-                style = typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
-                color = colorScheme.onSurface,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
+fun CardPieChartAndCategories(entries: List<FintrackData>, modifier: Modifier = Modifier) {
+    ChartCard(modifier) {
+        ChartColumn {
+            ChartTitle(text = stringResource(R.string.pie_chart_title))
             PieChart(entries)
             Spacer(modifier = Modifier.height(32.dp))
             Categories(entries)
