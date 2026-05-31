@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.fintrack.ui.components.BottomBar
 import com.example.fintrack.ui.components.SelectedScreenState
+import com.example.fintrack.ui.components.TopBar
 import com.example.fintrack.ui.screens.BudgetScreen
 import com.example.fintrack.ui.screens.ChartsScreen
 import com.example.fintrack.ui.screens.HomeScreen
@@ -40,8 +41,14 @@ class MainActivity : ComponentActivity() {
 )
 @Composable
 fun DeviceScreen() {
-    var selectedScreen by remember { mutableStateOf(SelectedScreenState.HOME.value) }
+    var selectedScreen by remember { mutableStateOf(SelectedScreenState.CHARTS.value) }
     Scaffold(
+        topBar = {
+                TopBar(
+                    {},
+                    {},
+                )
+             },
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             BottomBar(
