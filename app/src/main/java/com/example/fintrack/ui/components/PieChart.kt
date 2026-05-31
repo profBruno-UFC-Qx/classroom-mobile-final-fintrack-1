@@ -112,7 +112,7 @@ fun Categories(
 
 @Composable
 fun CardPieChartAndCategories(
-    data: List<FintrackData>,
+    entries: List<FintrackData>,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -133,9 +133,9 @@ fun CardPieChartAndCategories(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            PieChart(data)
+            PieChart(entries)
             Spacer(modifier = Modifier.height(32.dp))
-            Categories(data)
+            Categories(entries)
         }
     }
 }
@@ -156,6 +156,6 @@ fun PreviewCardPieChartAndCategories() {
     )
 
     Box(modifier = Modifier.padding(16.dp)) {
-        CardPieChartAndCategories(data = mock)
+        CardPieChartAndCategories(entries = mock)
     }
 }
