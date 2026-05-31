@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">fintrack</string>
+    <string name="home">Home</string>
+    <string name="charts">Charts</string>
+    <string name="budget">Budget</string>
+
+    <string name="line_chart_title">Evolução dos Gastos</string>
+    <string name="pie_chart_title">Despesa por Categoria</string>
 </resources>
