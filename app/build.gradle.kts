@@ -40,6 +40,9 @@ android {
 }
 
 dependencies {
+
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.core.ktx)
