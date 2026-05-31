@@ -51,18 +51,9 @@ private fun HomeContent(
     uiState          : HomeUiState,
     onAddTransaction : (Transaction) -> Unit
 ) {
-    var currentScreen   by remember { mutableStateOf("home") }
     var showBottomSheet by remember { mutableStateOf(false) }
 
     Scaffold(
-        bottomBar = {
-            BottomBar(
-                currentScreen = currentScreen,
-                onHomeClick   = { currentScreen = "home" },
-                onChartsClick = { currentScreen = "charts" },
-                onBudgetClick = { currentScreen = "budget" }
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { showBottomSheet = true },
