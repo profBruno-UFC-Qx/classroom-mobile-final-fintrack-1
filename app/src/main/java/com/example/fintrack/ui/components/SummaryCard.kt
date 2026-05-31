@@ -15,6 +15,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -32,9 +33,8 @@ fun SummaryCard(summary: MonthlySummary) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = Color.White,
-
+        colors = CardDefaults.cardColors(
+            containerColor = colorScheme.surfaceContainerLow,
         )
     )
     {
