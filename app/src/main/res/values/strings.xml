@@ -6,4 +6,6 @@
 
     <string name="line_chart_title">Evolução dos Gastos</string>
     <string name="pie_chart_title">Despesa por Categoria</string>
+    <string name="menu_navigation">Menu de navegação</string>
+    <string name="notification">Notificação</string>
 </resources>
