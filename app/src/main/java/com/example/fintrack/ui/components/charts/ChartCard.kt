@@ -21,7 +21,7 @@ fun ChartCard(modifier: Modifier = Modifier, content: @Composable ColumnScope.()
         ),
         shape = MaterialTheme.shapes.large,
         border = BorderStroke(
-            width = 2.dp,
+            width = 1.dp,
             color = colorScheme.outline,
         ),
         content = content,
