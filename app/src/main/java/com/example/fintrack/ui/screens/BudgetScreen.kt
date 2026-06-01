@@ -16,6 +16,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.AccountBalance
+import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.DirectionsCar
+import androidx.compose.material.icons.outlined.HealthAndSafety
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Restaurant
+import androidx.compose.material.icons.outlined.ShoppingBag
+import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -33,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -82,15 +90,22 @@ private fun categoryStyle(category: TransactionCategory): CategoryStyle = when (
         iconTint = Color(0xFF5F5E5A),
         progressColor = Color(0xFF888780),
     )
-    else -> CategoryStyle(
-        iconBg = Color(0xFFF1EFE8),
-        iconTint = Color(0xFF5F5E5A),
-        progressColor = Color(0xFF888780),
+    TransactionCategory.SALARY -> CategoryStyle(
+        iconBg = Color(0xFFE3F2FD),
+        iconTint = Color(0xFF1976D2),
+        progressColor = Color(0xFF2196F3),
     )
 }
 
-@Composable
-private fun categoryIcon(category: TransactionCategory): ImageVector? = null
+private fun categoryIcon(category: TransactionCategory): ImageVector = when (category) {
+    TransactionCategory.FOOD      -> Icons.Outlined.Restaurant
+    TransactionCategory.TRANSPORT -> Icons.Outlined.DirectionsCar
+    TransactionCategory.SALARY    -> Icons.Outlined.AccountBalance
+    TransactionCategory.INTERNET  -> Icons.Outlined.Wifi
+    TransactionCategory.HEALTH    -> Icons.Outlined.HealthAndSafety
+    TransactionCategory.SHOPPING  -> Icons.Outlined.ShoppingBag
+    TransactionCategory.OTHER     -> Icons.Outlined.Category
+}
 
 @Composable
 fun BudgetScreen(modifier: Modifier = Modifier) {
@@ -138,7 +153,12 @@ fun BudgetScreen(modifier: Modifier = Modifier) {
                             .background(Color(0xFFE8E4FF)),
                         contentAlignment = Alignment.Center,
                     ) {
-                        Text(text = "👤", fontSize = 16.sp)
+                        Icon(
+                            imageVector = Icons.Outlined.Person,
+                            contentDescription = "Perfil",
+                            tint = Color(0xFF534AB7),
+                            modifier = Modifier.size(20.dp)
+                        )
                     }
                 }
 
@@ -289,17 +309,12 @@ fun BudgetCard(budget: CategoryBudget) {
                         .background(style.iconBg),
                     contentAlignment = Alignment.Center,
                 ) {
-                    val icon = categoryIcon(budget.category)
-                    if (icon != null) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = style.iconTint,
-                            modifier = Modifier.size(20.dp),
-                        )
-                    } else {
-                        Text(text = budget.category.emoji, fontSize = 16.sp)
-                    }
+                    Icon(
+                        imageVector = categoryIcon(budget.category),
+                        contentDescription = null,
+                        tint = style.iconTint,
+                        modifier = Modifier.size(20.dp),
+                    )
                 }
 
                 Spacer(modifier = Modifier.width(10.dp))
