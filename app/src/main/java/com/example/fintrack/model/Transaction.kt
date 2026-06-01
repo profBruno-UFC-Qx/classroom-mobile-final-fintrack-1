@@ -3,13 +3,13 @@ package com.example.fintrack.model
 enum class TransactionType { INCOME, EXPENSE }
 
 enum class TransactionCategory(val label: String, val type: TransactionType) {
-    SALARY("Salary",TransactionType.INCOME),
-    FOOD("Food", TransactionType.EXPENSE),
-    TRANSPORT("Transport",TransactionType.EXPENSE),
-    HEALTH("Healthcare",TransactionType.EXPENSE),
-    INTERNET("Internet",TransactionType.EXPENSE),
-    SHOPPING("Shopping",TransactionType.EXPENSE),
-    OTHER("Other",TransactionType.EXPENSE),
+    SALARY("Salário", TransactionType.INCOME),
+    FOOD("Alimentação", TransactionType.EXPENSE),
+    TRANSPORT("Transporte", TransactionType.EXPENSE),
+    HEALTH("Saúde", TransactionType.EXPENSE),
+    INTERNET("Internet", TransactionType.EXPENSE),
+    SHOPPING("Compras", TransactionType.EXPENSE),
+    OTHER("Outros", TransactionType.EXPENSE),
 }
 
 data class Transaction(
