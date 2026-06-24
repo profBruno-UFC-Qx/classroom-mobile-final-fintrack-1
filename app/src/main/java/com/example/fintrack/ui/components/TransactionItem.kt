@@ -1,69 +1,67 @@
 package com.example.fintrack.ui.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.Category
-import androidx.compose.material.icons.outlined.DirectionsCar
-import androidx.compose.material.icons.outlined.HealthAndSafety
-import androidx.compose.material.icons.outlined.Restaurant
-import androidx.compose.material.icons.outlined.ShoppingBag
-import androidx.compose.material.icons.outlined.Wifi
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.fintrack.model.Transaction
-import com.example.fintrack.model.TransactionCategory
 import com.example.fintrack.model.TransactionType
+import com.example.fintrack.model.TransactionCategory
+import com.example.fintrack.ui.getCategoryIcon
+import com.example.fintrack.ui.getCategoryStyle
 
 @Composable
 fun TransactionItem(transaction: Transaction) {
     val isExpense = transaction.type == TransactionType.EXPENSE
+    val style = getCategoryStyle(transaction.category)
 
     ListItem(
         leadingContent = {
-            Surface(
-                shape = CircleShape,
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(style.iconBg),
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector        = categoryIcon(transaction.category),
+                    imageVector        = getCategoryIcon(transaction.category),
                     contentDescription = transaction.category.label,
-                    modifier           = Modifier.padding(8.dp).size(20.dp)
+                    modifier           = Modifier.size(22.dp),
+                    tint               = style.iconTint
                 )
             }
         },
         headlineContent = {
-            Text(transaction.title)
+            Text(
+                text = transaction.title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
         },
         trailingContent = {
             Text(
-                text       = if (isExpense) "- %.2f".format(transaction.amount)
-                else "  %.2f".format(transaction.amount),
+                text       = if (isExpense) "- R$ %.2f".format(transaction.amount)
+                else "+ R$ %.2f".format(transaction.amount),
                 style      = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
+                color      = if (isExpense) Color(0xFFA32D2D) else Color(0xFF0F6E56)
             )
         }
     )
-}
-
-private fun categoryIcon(category: TransactionCategory): ImageVector = when (category) {
-    TransactionCategory.FOOD      -> Icons.Outlined.Restaurant
-    TransactionCategory.TRANSPORT -> Icons.Outlined.DirectionsCar
-    TransactionCategory.SALARY    -> Icons.Outlined.AccountBalance
-    TransactionCategory.INTERNET  -> Icons.Outlined.Wifi
-    TransactionCategory.HEALTH    -> Icons.Outlined.HealthAndSafety
-    TransactionCategory.SHOPPING  -> Icons.Outlined.ShoppingBag
-    TransactionCategory.OTHER     -> Icons.Outlined.Category
 }
 
 @Preview(showBackground = true)

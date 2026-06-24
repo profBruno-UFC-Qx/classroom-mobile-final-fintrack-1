@@ -17,14 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountBalance
-import androidx.compose.material.icons.outlined.Category
-import androidx.compose.material.icons.outlined.DirectionsCar
-import androidx.compose.material.icons.outlined.HealthAndSafety
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Restaurant
-import androidx.compose.material.icons.outlined.ShoppingBag
-import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -41,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,62 +42,9 @@ import com.example.fintrack.model.CategoryBudget
 import com.example.fintrack.model.TransactionCategory
 import com.example.fintrack.ui.components.charts.MonthYearSelector
 import com.example.fintrack.ui.theme.FintrackTheme
+import com.example.fintrack.ui.getCategoryIcon
+import com.example.fintrack.ui.getCategoryStyle
 import java.time.YearMonth
-
-// Estilo visual por categoria
-private data class CategoryStyle(
-    val iconBg: Color,
-    val iconTint: Color,
-    val progressColor: Color,
-)
-
-private fun categoryStyle(category: TransactionCategory): CategoryStyle = when (category) {
-    TransactionCategory.FOOD -> CategoryStyle(
-        iconBg = Color(0xFFEAF3DE),
-        iconTint = Color(0xFF3B6D11),
-        progressColor = Color(0xFF639922),
-    )
-    TransactionCategory.TRANSPORT -> CategoryStyle(
-        iconBg = Color(0xFFFCEBEB),
-        iconTint = Color(0xFFA32D2D),
-        progressColor = Color(0xFFE24B4A),
-    )
-    TransactionCategory.SHOPPING -> CategoryStyle(
-        iconBg = Color(0xFFEEEDFE),
-        iconTint = Color(0xFF534AB7),
-        progressColor = Color(0xFF7F77DD),
-    )
-    TransactionCategory.HEALTH -> CategoryStyle(
-        iconBg = Color(0xFFE1F5EE),
-        iconTint = Color(0xFF0F6E56),
-        progressColor = Color(0xFF1D9E75),
-    )
-    TransactionCategory.INTERNET -> CategoryStyle(
-        iconBg = Color(0xFFFAEEDA),
-        iconTint = Color(0xFF854F0B),
-        progressColor = Color(0xFFEF9F27),
-    )
-    TransactionCategory.OTHER -> CategoryStyle(
-        iconBg = Color(0xFFF1EFE8),
-        iconTint = Color(0xFF5F5E5A),
-        progressColor = Color(0xFF888780),
-    )
-    TransactionCategory.SALARY -> CategoryStyle(
-        iconBg = Color(0xFFE3F2FD),
-        iconTint = Color(0xFF1976D2),
-        progressColor = Color(0xFF2196F3),
-    )
-}
-
-private fun categoryIcon(category: TransactionCategory): ImageVector = when (category) {
-    TransactionCategory.FOOD      -> Icons.Outlined.Restaurant
-    TransactionCategory.TRANSPORT -> Icons.Outlined.DirectionsCar
-    TransactionCategory.SALARY    -> Icons.Outlined.AccountBalance
-    TransactionCategory.INTERNET  -> Icons.Outlined.Wifi
-    TransactionCategory.HEALTH    -> Icons.Outlined.HealthAndSafety
-    TransactionCategory.SHOPPING  -> Icons.Outlined.ShoppingBag
-    TransactionCategory.OTHER     -> Icons.Outlined.Category
-}
 
 @Composable
 fun BudgetScreen(modifier: Modifier = Modifier) {
@@ -276,7 +215,7 @@ private fun SummaryCard(
 
 @Composable
 fun BudgetCard(budget: CategoryBudget) {
-    val style = categoryStyle(budget.category)
+    val style = getCategoryStyle(budget.category)
     val percent = (budget.progress * 100).toInt().coerceIn(0, 999)
 
     val amountColor = when {
@@ -310,7 +249,7 @@ fun BudgetCard(budget: CategoryBudget) {
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        imageVector = categoryIcon(budget.category),
+                        imageVector = getCategoryIcon(budget.category),
                         contentDescription = null,
                         tint = style.iconTint,
                         modifier = Modifier.size(20.dp),
