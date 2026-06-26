@@ -17,5 +17,6 @@ data class Transaction(
     val title    : String,
     val amount   : Double,
     val type     : TransactionType,
-    val category : TransactionCategory
+    val category : TransactionCategory,
+    val date     : java.time.LocalDate
 )

@@ -6,28 +6,33 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,19 +40,23 @@ import androidx.compose.ui.unit.dp
 import com.example.fintrack.model.Transaction
 import com.example.fintrack.model.TransactionCategory
 import com.example.fintrack.model.TransactionType
+import kotlinx.coroutines.delay
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTransactionBottomSheet(
+    transaction : Transaction? = null,
     onDismiss : () -> Unit,
     onConfirm : (Transaction) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    var title            by remember { mutableStateOf("") }
-    var amount           by remember { mutableStateOf("") }
-    var type             by remember { mutableStateOf(TransactionType.EXPENSE) }
-    var category         by remember { mutableStateOf(TransactionCategory.OTHER) }
+    var title            by remember { mutableStateOf(transaction?.title ?: "") }
+    var amount           by remember { mutableStateOf(transaction?.amount?.toString() ?: "") }
+    var type             by remember { mutableStateOf(transaction?.type ?: TransactionType.EXPENSE) }
+    var category         by remember { mutableStateOf(transaction?.category ?: TransactionCategory.OTHER) }
+    var date             by remember { mutableStateOf(transaction?.date ?: LocalDate.now()) }
     var categoryExpanded by remember { mutableStateOf(false) }
 
     ModalBottomSheet(
@@ -76,11 +85,12 @@ fun AddTransactionBottomSheet(
                 if (value > 0) {
                     onConfirm(
                         Transaction(
-                            id       = System.currentTimeMillis().toInt(),
+                            id       = transaction?.id ?: System.currentTimeMillis().toInt(),
                             title    = title.ifBlank { category.label },
                             amount   = value,
                             type     = type,
-                            category = category
+                            category = category,
+                            date     = date
                         )
                     )
                 }
@@ -105,14 +115,27 @@ private fun BottomSheetContent(
     onDismiss        : () -> Unit,
     onConfirm        : () -> Unit
 ) {
-    // filtra as categorias do enum pelo tipo selecionado
-    val categories = TransactionCategory.entries.filter { it.type == type }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    // Foca e abre o teclado de forma assíncrona para não travar a animação
+    LaunchedEffect(Unit) {
+        delay(100) // Delay mínimo para o layout se estabilizar
+        focusRequester.requestFocus()
+        keyboardController?.show()
+    }
+
+    // Memoriza o filtro para evitar recálculos durante o teclado
+    val categories = remember(type) { 
+        TransactionCategory.entries.filter { it.type == type }
+    }
 
     Column(
         modifier            = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
-            .padding(bottom = 32.dp),
+            .padding(bottom = 32.dp)
+            .imePadding(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -140,7 +163,9 @@ private fun BottomSheetContent(
             label           = { Text("Value (R$)") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             singleLine      = true,
-            modifier        = Modifier.fillMaxWidth()
+            modifier        = Modifier
+                .fillMaxWidth()
+                .focusRequester(focusRequester)
         )
 
         OutlinedTextField(
@@ -165,7 +190,7 @@ private fun BottomSheetContent(
                 trailingIcon  = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                 modifier      = Modifier
                     .fillMaxWidth()
-                    .menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true)
+                    .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true)
             )
             ExposedDropdownMenu(
                 expanded         = categoryExpanded,
