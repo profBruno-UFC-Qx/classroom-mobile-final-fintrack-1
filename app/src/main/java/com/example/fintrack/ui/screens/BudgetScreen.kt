@@ -42,8 +42,8 @@ import com.example.fintrack.model.CategoryBudget
 import com.example.fintrack.model.TransactionCategory
 import com.example.fintrack.ui.components.charts.MonthYearSelector
 import com.example.fintrack.ui.theme.FintrackTheme
-import com.example.fintrack.ui.getCategoryIcon
-import com.example.fintrack.ui.getCategoryStyle
+import com.example.fintrack.ui.components.getCategoryIcon
+import com.example.fintrack.ui.components.getCategoryStyle
 import java.time.YearMonth
 
 @Composable
