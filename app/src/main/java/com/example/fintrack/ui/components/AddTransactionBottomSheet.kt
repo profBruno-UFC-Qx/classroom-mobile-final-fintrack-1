@@ -118,14 +118,12 @@ private fun BottomSheetContent(
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    // Foca e abre o teclado de forma assíncrona para não travar a animação
     LaunchedEffect(Unit) {
-        delay(100) // Delay mínimo para o layout se estabilizar
+        delay(100)
         focusRequester.requestFocus()
         keyboardController?.show()
     }
 
-    // Memoriza o filtro para evitar recálculos durante o teclado
     val categories = remember(type) { 
         TransactionCategory.entries.filter { it.type == type }
     }
@@ -156,7 +154,6 @@ private fun BottomSheetContent(
             }
         }
 
-        // abre o teclado numérico do celular
         OutlinedTextField(
             value           = amount,
             onValueChange   = { onAmountChange(it) },
@@ -168,6 +165,7 @@ private fun BottomSheetContent(
                 .focusRequester(focusRequester)
         )
 
+        //
         OutlinedTextField(
             value         = title,
             onValueChange = { onTitleChange(it) },
