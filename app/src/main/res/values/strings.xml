@@ -1,9 +1,11 @@
 <resources>
+    <!-- App Name -->
     <string name="app_name">Fintrack</string>
     <string name="home">Início</string>
     <string name="charts">Gráficos</string>
     <string name="budget">Orçamento</string>
 
+    <!-- Charts -->
     <string name="line_chart_title">Evolução dos Gastos</string>
     <string name="pie_chart_title">Despesa por Categoria</string>
     <string name="menu_navigation">Menu de navegação</string>

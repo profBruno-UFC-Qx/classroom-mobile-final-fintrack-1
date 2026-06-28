@@ -76,7 +76,7 @@ fun DeviceScreen() {
         }
     }
 
-    var selectedScreen by remember { mutableStateOf(SelectedScreenState.CHARTS.value) }
+    var selectedScreen by remember { mutableStateOf(SelectedScreenState.HOME.value) }
     
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
