@@ -67,7 +67,7 @@ fun BudgetScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(Color(0xFFF5F5F7))
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Surface(
             color = MaterialTheme.colorScheme.surface,

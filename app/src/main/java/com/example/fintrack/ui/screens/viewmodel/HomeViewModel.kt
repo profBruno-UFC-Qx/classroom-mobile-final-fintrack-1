@@ -1,7 +1,9 @@
 package com.example.fintrack.ui.screens.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.fintrack.data.repository.TransactionRepository
 import com.example.fintrack.model.MonthlySummary
 import com.example.fintrack.model.Transaction
 import com.example.fintrack.model.TransactionType
@@ -10,6 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
@@ -20,12 +23,12 @@ data class HomeUiState(
     val visibleTransactions : List<Transaction> = emptyList()
 )
 
-class HomeViewModel : ViewModel() {
-    private val _allTransactions = MutableStateFlow<List<Transaction>>(emptyList())
+class HomeViewModel(private val repository: TransactionRepository) : ViewModel() {
+
     private val _selectedDate = MutableStateFlow(YearMonth.now())
 
     val uiState: StateFlow<HomeUiState> = combine(
-        _allTransactions,
+        repository.getAll(),
         _selectedDate
     ) { transactions, selectedDate ->
         val filtered = transactions.filter { 
@@ -61,15 +64,21 @@ class HomeViewModel : ViewModel() {
     }
 
     fun addTransaction(transaction: Transaction) {
-        _allTransactions.value = listOf(transaction) + _allTransactions.value
+        viewModelScope.launch {
+            repository.insert(transaction)
+        }
     }
 
-    fun deleteTransaction(id: Int) {
-        _allTransactions.value = _allTransactions.value.filter { it.id != id }
+    fun deleteTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            repository.delete(transaction)
+        }
     }
 
     fun editTransaction(transaction: Transaction) {
-        _allTransactions.value = _allTransactions.value.map { if (it.id == transaction.id) transaction else it }
+        viewModelScope.launch {
+            repository.insert(transaction)
+        }
     }
 
     private fun buildSummary(transactions: List<Transaction>, month: String): MonthlySummary {
@@ -78,5 +87,15 @@ class HomeViewModel : ViewModel() {
             expenses = transactions.filter { it.type == TransactionType.EXPENSE }.sumOf { it.amount },
             income   = transactions.filter { it.type == TransactionType.INCOME  }.sumOf { it.amount }
         )
+    }
+}
+
+class HomeViewModelFactory(private val repository: TransactionRepository) : ViewModelProvider.Factory {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return HomeViewModel(repository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

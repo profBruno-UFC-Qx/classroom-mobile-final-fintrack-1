@@ -119,12 +119,12 @@ private fun BottomSheetContent(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(Unit) {
-        delay(100)
+        delay(100) 
         focusRequester.requestFocus()
         keyboardController?.show()
     }
 
-    val categories = remember(type) { 
+    val categories = remember(type) {
         TransactionCategory.entries.filter { it.type == type }
     }
 
@@ -165,7 +165,6 @@ private fun BottomSheetContent(
                 .focusRequester(focusRequester)
         )
 
-        //
         OutlinedTextField(
             value         = title,
             onValueChange = { onTitleChange(it) },

@@ -32,12 +32,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fintrack.FintrackApplication
 import com.example.fintrack.model.MonthlySummary
 import com.example.fintrack.model.Transaction
 import com.example.fintrack.model.TransactionCategory
@@ -47,19 +49,24 @@ import com.example.fintrack.ui.components.SummaryCard
 import com.example.fintrack.ui.components.TransactionItem
 import com.example.fintrack.ui.screens.viewmodel.HomeUiState
 import com.example.fintrack.ui.screens.viewmodel.HomeViewModel
+import com.example.fintrack.ui.screens.viewmodel.HomeViewModelFactory
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.YearMonth
 import kotlin.math.roundToInt
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = viewModel()) {
+fun HomeScreen() {
+    val app = LocalContext.current.applicationContext as FintrackApplication
+    val viewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(app.repository)
+    )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeContent(
         uiState = uiState,
         onAddTransaction = { viewModel.addTransaction(it) },
-        onDeleteTransaction = { viewModel.deleteTransaction(it.id) },
+        onDeleteTransaction = { viewModel.deleteTransaction(it) }, // Atualizado para passar o objeto
         onEditTransaction = { viewModel.editTransaction(it) },
         onDateSelected = { viewModel.updateMonthYear(it) },
         onSwipeNext = { viewModel.nextMonth() },
