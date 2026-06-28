@@ -11,9 +11,10 @@ class BudgetRepository(private val budgetDao: BudgetDao) {
         return budgetDao.getBudgetsByMonth(date.toString())
     }
 
-    suspend fun updateBudget(category: String, limit: Double, date: YearMonth) {
+    suspend fun updateBudget(id: Int = 0, category: String, limit: Double, date: YearMonth) {
         budgetDao.insertBudget(
             BudgetEntity(
+                id = id,
                 category = category,
                 limitAmount = limit,
                 monthYear = date.toString()

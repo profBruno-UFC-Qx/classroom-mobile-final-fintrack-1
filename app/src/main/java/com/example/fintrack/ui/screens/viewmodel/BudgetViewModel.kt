@@ -44,9 +44,15 @@ class BudgetViewModel(
             }
 
             val budgets = TransactionCategory.entries.filter { it.type == TransactionType.EXPENSE }.map { category ->
-                val limit = budgetEntities.find { it.category == category.name }?.limitAmount ?: 0.0
+                val entity = budgetEntities.find { it.category == category.name }
+                val limit = entity?.limitAmount ?: 0.0
                 val spent = filteredTransactions.filter { it.category == category }.sumOf { it.amount }
-                CategoryBudget(category, limit, spent)
+                CategoryBudget(
+                    id = entity?.id ?: 0,
+                    category = category, 
+                    limitAmount = limit, 
+                    spentAmount = spent
+                )
             }
 
             BudgetUiState(
@@ -67,7 +73,13 @@ class BudgetViewModel(
 
     fun setBudgetLimit(category: TransactionCategory, limit: Double) {
         viewModelScope.launch {
-            budgetRepository.updateBudget(category.name, limit, _selectedDate.value)
+            val currentBudget = uiState.value.budgets.find { it.category == category }
+            budgetRepository.updateBudget(
+                id = currentBudget?.id ?: 0,
+                category = category.name, 
+                limit = limit, 
+                date = _selectedDate.value
+            )
         }
     }
 
