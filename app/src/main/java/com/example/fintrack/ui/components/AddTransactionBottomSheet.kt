@@ -33,10 +33,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.fintrack.R
 import com.example.fintrack.model.Transaction
 import com.example.fintrack.model.TransactionCategory
 import com.example.fintrack.model.TransactionType
@@ -138,7 +140,7 @@ private fun BottomSheetContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text       = "Transaction",
+            text       = stringResource(R.string.add_transaction_title),
             style      = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )
@@ -149,7 +151,13 @@ private fun BottomSheetContent(
                 FilterChip(
                     selected = type == t,
                     onClick  = { onTypeChange(t) },
-                    label    = { Text(t.name.lowercase().replaceFirstChar { it.uppercase() }) }
+                    label    = { 
+                        val label = when(t) {
+                            TransactionType.INCOME -> stringResource(R.string.type_income)
+                            TransactionType.EXPENSE -> stringResource(R.string.type_expense)
+                        }
+                        Text(label) 
+                    }
                 )
             }
         }
@@ -157,7 +165,7 @@ private fun BottomSheetContent(
         OutlinedTextField(
             value           = amount,
             onValueChange   = { onAmountChange(it) },
-            label           = { Text("Value (R$)") },
+            label           = { Text(stringResource(R.string.label_value)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             singleLine      = true,
             modifier        = Modifier
@@ -168,7 +176,8 @@ private fun BottomSheetContent(
         OutlinedTextField(
             value         = title,
             onValueChange = { onTitleChange(it) },
-            label         = { Text("Title (optional)") },
+            label         = { Text(stringResource(R.string.label_title)) },
+            placeholder   = { Text(stringResource(R.string.placeholder_title)) },
             singleLine    = true,
             modifier      = Modifier.fillMaxWidth()
         )
@@ -183,7 +192,7 @@ private fun BottomSheetContent(
                 value         = category.label,
                 onValueChange = {},
                 readOnly      = true,
-                label         = { Text("Category") },
+                label         = { Text(stringResource(R.string.label_category)) },
                 trailingIcon  = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                 modifier      = Modifier
                     .fillMaxWidth()
@@ -215,13 +224,13 @@ private fun BottomSheetContent(
                 onClick  = onDismiss,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Cancel")
+                Text(stringResource(R.string.btn_cancel))
             }
             Button(
                 onClick  = onConfirm,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Confirm")
+                Text(stringResource(R.string.btn_confirm))
             }
         }
     }

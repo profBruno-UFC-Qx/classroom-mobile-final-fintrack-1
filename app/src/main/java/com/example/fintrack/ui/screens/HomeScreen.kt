@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -40,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fintrack.FintrackApplication
+import com.example.fintrack.R
 import com.example.fintrack.model.MonthlySummary
 import com.example.fintrack.model.Transaction
 import com.example.fintrack.model.TransactionCategory
@@ -66,7 +68,7 @@ fun HomeScreen() {
     HomeContent(
         uiState = uiState,
         onAddTransaction = { viewModel.addTransaction(it) },
-        onDeleteTransaction = { viewModel.deleteTransaction(it) }, // Atualizado para passar o objeto
+        onDeleteTransaction = { viewModel.deleteTransaction(it) }, 
         onEditTransaction = { viewModel.editTransaction(it) },
         onDateSelected = { viewModel.updateMonthYear(it) },
         onSwipeNext = { viewModel.nextMonth() },
@@ -164,7 +166,7 @@ private fun HomeContent(
             }
             item {
                 Text(
-                    text = "Transações",
+                    text = stringResource(R.string.transactions_list_title),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(16.dp)
@@ -179,7 +181,7 @@ private fun HomeContent(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Nenhuma transação neste mês",
+                            text = stringResource(R.string.empty_transactions),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

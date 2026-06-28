@@ -1,11 +1,32 @@
 <resources>
     <string name="app_name">Fintrack</string>
-    <string name="home">Home</string>
-    <string name="charts">Charts</string>
-    <string name="budget">Budget</string>
+    <string name="home">Início</string>
+    <string name="charts">Gráficos</string>
+    <string name="budget">Orçamento</string>
 
     <string name="line_chart_title">Evolução dos Gastos</string>
     <string name="pie_chart_title">Despesa por Categoria</string>
     <string name="menu_navigation">Menu de navegação</string>
     <string name="notification">Notificação</string>
+    <string name="notification_off">Notificação desativada</string>
+
+    <!-- Home Summary -->
+    <string name="summary_expenses">Despesas</string>
+    <string name="summary_income">Receitas</string>
+    <string name="summary_balance">Saldo</string>
+
+    <!-- Add Transaction -->
+    <string name="add_transaction_title">Nova Transação</string>
+    <string name="type_income">Receita</string>
+    <string name="type_expense">Despesa</string>
+    <string name="label_value">Valor (R$)</string>
+    <string name="label_title">Título</string>
+    <string name="placeholder_title">ex: Supermercado</string>
+    <string name="label_category">Categoria</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_confirm">Confirmar</string>
+
+    <!-- Home Screen -->
+    <string name="transactions_list_title">Transações</string>
+    <string name="empty_transactions">Nenhuma transação neste mês</string>
 </resources>
