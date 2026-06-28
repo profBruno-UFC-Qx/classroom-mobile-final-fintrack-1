@@ -2,7 +2,9 @@ package com.example.fintrack.ui.components
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Newspaper
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.NotificationsOff
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,6 +25,7 @@ import com.example.fintrack.R
 fun TopBar(
     onMenuClick: () -> Unit,
     onNotificationsClick: () -> Unit,
+    notificationsEnabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
@@ -37,8 +40,8 @@ fun TopBar(
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
                 Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = stringResource(R.string.menu_navigation),
+                    imageVector = Icons.Default.Newspaper,
+                    contentDescription = "Notícias e Dicas Financeiras",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -46,9 +49,9 @@ fun TopBar(
         actions = {
             IconButton(onClick = onNotificationsClick) {
                 Icon(
-                    imageVector = Icons.Default.Notifications,
+                    imageVector = if (notificationsEnabled) Icons.Default.Notifications else Icons.Default.NotificationsOff,
                     contentDescription = stringResource(R.string.notification),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    tint = if (notificationsEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         },
@@ -66,7 +69,8 @@ fun TopBar(
 @Composable
 fun PreviewTopBar() {
     TopBar(
-        {},
-        {},
+        onMenuClick = {},
+        onNotificationsClick = {},
+        notificationsEnabled = true
     )
 }
