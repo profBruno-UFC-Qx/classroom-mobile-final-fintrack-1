@@ -8,6 +8,8 @@ import androidx.compose.material.icons.outlined.HealthAndSafety
 import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.Wifi
+import androidx.compose.material.icons.outlined.CardGiftcard
+import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.fintrack.model.TransactionCategory
@@ -54,14 +56,32 @@ fun getCategoryStyle(category: TransactionCategory): CategoryStyle = when (categ
         iconTint = Color(0xFF1976D2),
         progressColor = Color(0xFF2196F3),
     )
+    TransactionCategory.INVESTMENT -> CategoryStyle(
+        iconBg = Color(0xFFE8F5E9),
+        iconTint = Color(0xFF2E7D32),
+        progressColor = Color(0xFF4CAF50),
+    )
+    TransactionCategory.GIFT -> CategoryStyle(
+        iconBg = Color(0xFFF3E5F5),
+        iconTint = Color(0xFF7B1FA2),
+        progressColor = Color(0xFF9C27B0),
+    )
+    TransactionCategory.OTHER_INCOME -> CategoryStyle(
+        iconBg = Color(0xFFFFF3E0),
+        iconTint = Color(0xFFE65100),
+        progressColor = Color(0xFFFF9800),
+    )
 }
 
 fun getCategoryIcon(category: TransactionCategory): ImageVector = when (category) {
-    TransactionCategory.FOOD      -> Icons.Outlined.Restaurant
-    TransactionCategory.TRANSPORT -> Icons.Outlined.DirectionsCar
-    TransactionCategory.SALARY    -> Icons.Outlined.AccountBalance
-    TransactionCategory.INTERNET  -> Icons.Outlined.Wifi
-    TransactionCategory.HEALTH    -> Icons.Outlined.HealthAndSafety
-    TransactionCategory.SHOPPING  -> Icons.Outlined.ShoppingBag
-    TransactionCategory.OTHER     -> Icons.Outlined.Category
+    TransactionCategory.FOOD         -> Icons.Outlined.Restaurant
+    TransactionCategory.TRANSPORT    -> Icons.Outlined.DirectionsCar
+    TransactionCategory.SALARY       -> Icons.Outlined.AccountBalance
+    TransactionCategory.INTERNET     -> Icons.Outlined.Wifi
+    TransactionCategory.HEALTH       -> Icons.Outlined.HealthAndSafety
+    TransactionCategory.SHOPPING     -> Icons.Outlined.ShoppingBag
+    TransactionCategory.OTHER        -> Icons.Outlined.Category
+    TransactionCategory.INVESTMENT   -> Icons.Outlined.TrendingUp
+    TransactionCategory.GIFT         -> Icons.Outlined.CardGiftcard
+    TransactionCategory.OTHER_INCOME -> Icons.Outlined.Category
 }
