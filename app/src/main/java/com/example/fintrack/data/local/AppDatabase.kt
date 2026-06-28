@@ -19,7 +19,8 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "fintrack.db"
-                ).build()
+                )
+                .build()
                 INSTANCE = instance
                 instance
             }
