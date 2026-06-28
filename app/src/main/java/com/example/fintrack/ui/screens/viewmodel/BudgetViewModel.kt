@@ -9,10 +9,12 @@ import com.example.fintrack.model.CategoryBudget
 import com.example.fintrack.model.MonthlySummary
 import com.example.fintrack.model.TransactionCategory
 import com.example.fintrack.model.TransactionType
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.YearMonth
@@ -23,6 +25,7 @@ data class BudgetUiState(
     val budgets: List<CategoryBudget> = emptyList()
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class BudgetViewModel(
     private val budgetRepository: BudgetRepository,
     private val transactionRepository: TransactionRepository
@@ -30,27 +33,28 @@ class BudgetViewModel(
 
     private val _selectedDate = MutableStateFlow(YearMonth.now())
 
-    val uiState: StateFlow<BudgetUiState> = combine(
-        _selectedDate,
-        budgetRepository.getBudgetsByMonth(YearMonth.now()), // Simplificado para o exemplo, ideal seria reativo ao _selectedDate
-        transactionRepository.getAll()
-    ) { date, budgetEntities, transactions ->
-        
-        val filteredTransactions = transactions.filter { 
-            YearMonth.from(it.date) == date 
-        }
+    val uiState: StateFlow<BudgetUiState> = _selectedDate.flatMapLatest { date ->
+        combine(
+            budgetRepository.getBudgetsByMonth(date),
+            transactionRepository.getAll()
+        ) { budgetEntities, transactions ->
+            
+            val filteredTransactions = transactions.filter { 
+                YearMonth.from(it.date) == date 
+            }
 
-        val budgets = TransactionCategory.entries.filter { it.type == TransactionType.EXPENSE }.map { category ->
-            val limit = budgetEntities.find { it.category == category.name }?.limitAmount ?: 0.0
-            val spent = filteredTransactions.filter { it.category == category }.sumOf { it.amount }
-            CategoryBudget(category, limit, spent)
-        }
+            val budgets = TransactionCategory.entries.filter { it.type == TransactionType.EXPENSE }.map { category ->
+                val limit = budgetEntities.find { it.category == category.name }?.limitAmount ?: 0.0
+                val spent = filteredTransactions.filter { it.category == category }.sumOf { it.amount }
+                CategoryBudget(category, limit, spent)
+            }
 
-        BudgetUiState(
-            selectedDate = date,
-            summary = buildSummary(filteredTransactions, date.toString()),
-            budgets = budgets
-        )
+            BudgetUiState(
+                selectedDate = date,
+                summary = buildSummary(filteredTransactions, date.toString()),
+                budgets = budgets
+            )
+        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -59,6 +63,12 @@ class BudgetViewModel(
 
     fun updateMonthYear(newDate: YearMonth) {
         _selectedDate.value = newDate
+    }
+
+    fun setBudgetLimit(category: TransactionCategory, limit: Double) {
+        viewModelScope.launch {
+            budgetRepository.updateBudget(category.name, limit, _selectedDate.value)
+        }
     }
 
     private fun buildSummary(transactions: List<com.example.fintrack.model.Transaction>, month: String): MonthlySummary {

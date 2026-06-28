@@ -14,25 +14,34 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -40,6 +49,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fintrack.FintrackApplication
 import com.example.fintrack.model.CategoryBudget
+import com.example.fintrack.model.TransactionCategory
 import com.example.fintrack.ui.components.SummaryCard
 import com.example.fintrack.ui.components.getCategoryIcon
 import com.example.fintrack.ui.components.getCategoryStyle
@@ -54,6 +64,8 @@ fun BudgetScreen() {
     )
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    var showEditDialog by remember { mutableStateOf<TransactionCategory?>(null) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,32 +76,12 @@ fun BudgetScreen() {
             tonalElevation = 0.dp
         ) {
             Column(modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "Orçamento",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Box(
-                        modifier = Modifier
-                            .size(36.dp)
-                            .clip(CircleShape)
-                            .background(Color(0xFFE8E4FF)),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.Person,
-                            contentDescription = "Perfil",
-                            tint = Color(0xFF534AB7),
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
+                Text(
+                    text = "Orçamento",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
             }
         }
 
@@ -119,16 +111,37 @@ fun BudgetScreen() {
             }
 
             items(uiState.budgets) { budget ->
-                BudgetCard(budget)
+                BudgetCard(
+                    budget = budget,
+                    onEditClick = { showEditDialog = budget.category }
+                )
             }
 
             item { Spacer(modifier = Modifier.height(8.dp)) }
         }
     }
+
+    if (showEditDialog != null) {
+        val category = showEditDialog!!
+        val currentLimit = uiState.budgets.find { it.category == category }?.limitAmount ?: 0.0
+        
+        EditBudgetDialog(
+            category = category,
+            initialValue = currentLimit,
+            onDismiss = { showEditDialog = null },
+            onConfirm = { newLimit ->
+                viewModel.setBudgetLimit(category, newLimit)
+                showEditDialog = null
+            }
+        )
+    }
 }
 
 @Composable
-fun BudgetCard(budget: CategoryBudget) {
+fun BudgetCard(
+    budget: CategoryBudget,
+    onEditClick: () -> Unit
+) {
     val style = getCategoryStyle(budget.category)
     val percent = (budget.progress * 100).toInt().coerceIn(0, 999)
 
@@ -195,12 +208,25 @@ fun BudgetCard(budget: CategoryBudget) {
                 }
 
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "R$ %.0f".format(budget.spentAmount),
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = amountColor,
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "R$ %.0f".format(budget.spentAmount),
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.SemiBold,
+                            color = amountColor,
+                        )
+                        IconButton(
+                            onClick = onEditClick,
+                            modifier = Modifier.size(24.dp).padding(start = 4.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = "Editar Limite",
+                                modifier = Modifier.size(14.dp),
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                     Text(
                         text = "de R$ %.0f".format(budget.limitAmount),
                         style = MaterialTheme.typography.labelSmall,
@@ -238,6 +264,48 @@ fun BudgetCard(budget: CategoryBudget) {
             }
         }
     }
+}
+
+@Composable
+fun EditBudgetDialog(
+    category: TransactionCategory,
+    initialValue: Double,
+    onDismiss: () -> Unit,
+    onConfirm: (Double) -> Unit
+) {
+    var value by remember { mutableStateOf(if (initialValue > 0) initialValue.toString() else "") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Definir Limite: ${category.label}") },
+        text = {
+            Column {
+                Text("Quanto você planeja gastar nesta categoria este mês?", style = MaterialTheme.typography.bodySmall)
+                Spacer(Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = { value = it },
+                    label = { Text("Limite (R$)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(onClick = { 
+                val newLimit = value.toDoubleOrNull() ?: 0.0
+                onConfirm(newLimit)
+            }) {
+                Text("Salvar")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
 }
 
 @Composable

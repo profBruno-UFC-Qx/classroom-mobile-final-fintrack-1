@@ -20,4 +20,8 @@ class BudgetRepository(private val budgetDao: BudgetDao) {
             )
         )
     }
+
+    suspend fun deleteBudget(id: Int) {
+        budgetDao.deleteBudget(id)
+    }
 }
