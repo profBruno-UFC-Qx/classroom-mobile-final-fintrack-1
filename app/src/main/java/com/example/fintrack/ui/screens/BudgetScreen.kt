@@ -27,45 +27,35 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fintrack.FintrackApplication
 import com.example.fintrack.model.CategoryBudget
-import com.example.fintrack.model.TransactionCategory
-import com.example.fintrack.ui.components.charts.MonthYearSelector
-import com.example.fintrack.ui.theme.FintrackTheme
+import com.example.fintrack.ui.components.SummaryCard
 import com.example.fintrack.ui.components.getCategoryIcon
 import com.example.fintrack.ui.components.getCategoryStyle
-import java.time.YearMonth
+import com.example.fintrack.ui.screens.viewmodel.BudgetViewModel
+import com.example.fintrack.ui.theme.FintrackTheme
 
 @Composable
-fun BudgetScreen(modifier: Modifier = Modifier) {
-    var selectedDate by remember { mutableStateOf(YearMonth.now()) }
-
-    // TODO: Integrar com banco de dados real
-    val mockBudgets = listOf(
-        CategoryBudget(TransactionCategory.FOOD, 800.0, 450.0),
-        CategoryBudget(TransactionCategory.TRANSPORT, 300.0, 320.0),
-        CategoryBudget(TransactionCategory.SHOPPING, 500.0, 150.0),
-        CategoryBudget(TransactionCategory.HEALTH, 200.0, 50.0),
-        CategoryBudget(TransactionCategory.INTERNET, 100.0, 100.0),
-        CategoryBudget(TransactionCategory.OTHER, 150.0, 20.0),
+fun BudgetScreen() {
+    val app = LocalContext.current.applicationContext as FintrackApplication
+    val viewModel: BudgetViewModel = viewModel(
+        factory = BudgetViewModel.Factory(app.budgetRepository, app.repository)
     )
-
-    val totalLimit = mockBudgets.sumOf { it.limitAmount }
-    val totalSpent = mockBudgets.sumOf { it.spentAmount }
-    val totalAvailable = totalLimit - totalSpent
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
@@ -100,14 +90,6 @@ fun BudgetScreen(modifier: Modifier = Modifier) {
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                MonthYearSelector(
-                    selectedDate = selectedDate,
-                    onDateSelected = { selectedDate = it },
-                    modifier = Modifier.fillMaxWidth(),
-                )
             }
         }
 
@@ -118,13 +100,11 @@ fun BudgetScreen(modifier: Modifier = Modifier) {
                 .padding(horizontal = 16.dp),
         ) {
             item {
-                Spacer(modifier = Modifier.height(16.dp))
-                SummaryRow(
-                    totalLimit = totalLimit,
-                    totalSpent = totalSpent,
-                    totalAvailable = totalAvailable,
+                SummaryCard(
+                    summary = uiState.summary,
+                    selectedDate = uiState.selectedDate,
+                    onDateSelected = { viewModel.updateMonthYear(it) }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
             }
 
             item {
@@ -138,77 +118,11 @@ fun BudgetScreen(modifier: Modifier = Modifier) {
                 )
             }
 
-            items(mockBudgets) { budget ->
+            items(uiState.budgets) { budget ->
                 BudgetCard(budget)
             }
 
             item { Spacer(modifier = Modifier.height(8.dp)) }
-        }
-    }
-}
-
-@Composable
-private fun SummaryRow(
-    totalLimit: Double,
-    totalSpent: Double,
-    totalAvailable: Double,
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        SummaryCard(
-            label = "Limite total",
-            value = "R$ %.0f".format(totalLimit),
-            valueColor = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.weight(1f),
-        )
-        SummaryCard(
-            label = "Gasto",
-            value = "R$ %.0f".format(totalSpent),
-            valueColor = Color(0xFFBA7517),
-            modifier = Modifier.weight(1f),
-        )
-        SummaryCard(
-            label = "Disponível",
-            value = "R$ %.0f".format(totalAvailable),
-            valueColor = Color(0xFF1D9E75),
-            modifier = Modifier.weight(1f),
-        )
-    }
-}
-
-@Composable
-private fun SummaryCard(
-    label: String,
-    value: String,
-    valueColor: Color,
-    modifier: Modifier = Modifier,
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = value,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = valueColor,
-            )
         }
     }
 }
@@ -342,8 +256,6 @@ private fun AlertBadge(text: String, textColor: Color, bgColor: Color) {
         )
     }
 }
-
-// ── Preview ────────────────────────────────────────────────────────────────────
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
