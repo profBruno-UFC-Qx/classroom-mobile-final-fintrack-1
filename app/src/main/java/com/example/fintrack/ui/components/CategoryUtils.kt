@@ -66,10 +66,10 @@ fun getCategoryStyle(category: TransactionCategory): CategoryStyle = when (categ
         iconTint = Color(0xFF7B1FA2),
         progressColor = Color(0xFF9C27B0),
     )
-    TransactionCategory.OTHER_INCOME -> CategoryStyle(
-        iconBg = Color(0xFFFFF3E0),
-        iconTint = Color(0xFFE65100),
-        progressColor = Color(0xFFFF9800),
+    else -> CategoryStyle(
+        iconBg = Color(0xFFF1EFE8),
+        iconTint = Color(0xFF5F5E5A),
+        progressColor = Color(0xFF888780),
     )
 }
 
@@ -84,4 +84,5 @@ fun getCategoryIcon(category: TransactionCategory): ImageVector = when (category
     TransactionCategory.INVESTMENT   -> Icons.Outlined.TrendingUp
     TransactionCategory.GIFT         -> Icons.Outlined.CardGiftcard
     TransactionCategory.OTHER_INCOME -> Icons.Outlined.Category
+    else                             -> Icons.Outlined.Category
 }

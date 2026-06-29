@@ -7,7 +7,7 @@ import com.example.fintrack.data.repository.TransactionRepository
 import com.example.fintrack.model.TransactionType
 import com.example.fintrack.ui.components.charts.FintrackData
 import com.example.fintrack.ui.components.charts.MonthEntry
-import com.example.fintrack.ui.getCategoryStyle
+import com.example.fintrack.ui.components.getCategoryStyle
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

@@ -1,7 +1,5 @@
 package com.example.fintrack.model
 
-import com.example.fintrack.model.TransactionCategory
-
 data class CategoryBudget(
     val id: Int = 0,
     val category: TransactionCategory,
@@ -9,8 +7,9 @@ data class CategoryBudget(
     val spentAmount: Double
 ) {
     val progress: Float
-        get() = if (limitAmount > 0) (spentAmount / limitAmount).toFloat() else 0f
+        get() = if (limitAmount > 0.0) (spentAmount / limitAmount).toFloat() else 0f
     
+    // CORREÇÃO: Só considera ultrapassado se houver um limite definido (> 0)
     val isOverBudget: Boolean
-        get() = spentAmount > limitAmount
+        get() = limitAmount > 0.0 && spentAmount > limitAmount
 }

@@ -29,7 +29,7 @@ data class MonthEntry(
 
 @Composable
 fun LineChart(entries: List<MonthEntry>, modifier: Modifier = Modifier) {
-    val modelProducer = remember(entries) { CartesianChartModelProducer() }
+    val modelProducer = remember { CartesianChartModelProducer() }
 
     LaunchedEffect(key1 = entries) {
         modelProducer.runTransaction {
