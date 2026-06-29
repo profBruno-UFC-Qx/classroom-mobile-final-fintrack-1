@@ -3,11 +3,18 @@ package com.example.fintrack.worker
 import android.content.Context
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
 object NotificationScheduler {
+
+    fun triggerTestNotification(context: Context) {
+        val workManager = WorkManager.getInstance(context)
+        val workRequest = OneTimeWorkRequestBuilder<ReminderWorker>().build()
+        workManager.enqueue(workRequest)
+    }
 
     fun scheduleReminders(context: Context) {
         val workManager = WorkManager.getInstance(context)

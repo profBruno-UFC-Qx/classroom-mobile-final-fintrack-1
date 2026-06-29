@@ -143,17 +143,18 @@ fun BudgetCard(
     onEditClick: () -> Unit
 ) {
     val style = getCategoryStyle(budget.category)
-    val percent = (budget.progress * 100).toInt().coerceIn(0, 999)
+    val hasLimit = budget.limitAmount > 0.0
+    val percent = if (hasLimit) (budget.progress * 100).toInt().coerceIn(0, 999) else 0
 
     val amountColor = when {
         budget.isOverBudget -> MaterialTheme.colorScheme.error
-        budget.progress >= 1f -> Color(0xFFBA7517)
+        budget.progress >= 1f && hasLimit -> Color(0xFFBA7517)
         else -> style.iconTint
     }
 
     val progressColor = when {
         budget.isOverBudget -> MaterialTheme.colorScheme.error
-        budget.progress >= 1f -> Color(0xFFEF9F27)
+        budget.progress >= 1f && hasLimit -> Color(0xFFEF9F27)
         else -> style.progressColor
     }
 
@@ -195,13 +196,14 @@ fun BudgetCard(
                     Text(
                         text = when {
                             budget.isOverBudget -> "Limite ultrapassado"
-                            budget.progress >= 1f -> "Limite atingido"
-                            else -> "$percent% utilizado"
+                            budget.progress >= 1f && hasLimit -> "Limite atingido"
+                            hasLimit -> "$percent% utilizado"
+                            else -> "Sem limite definido"
                         },
                         style = MaterialTheme.typography.labelSmall,
                         color = when {
                             budget.isOverBudget -> MaterialTheme.colorScheme.error
-                            budget.progress >= 1f -> Color(0xFFBA7517)
+                            budget.progress >= 1f && hasLimit -> Color(0xFFBA7517)
                             else -> MaterialTheme.colorScheme.onSurfaceVariant
                         },
                     )
@@ -227,25 +229,29 @@ fun BudgetCard(
                             )
                         }
                     }
-                    Text(
-                        text = "de R$ %.0f".format(budget.limitAmount),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                    if (hasLimit) {
+                        Text(
+                            text = "de R$ %.0f".format(budget.limitAmount),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            if (hasLimit) {
+                Spacer(modifier = Modifier.height(10.dp))
 
-            LinearProgressIndicator(
-                progress = { budget.progress.coerceIn(0f, 1f) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(99.dp)),
-                color = progressColor,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
+                LinearProgressIndicator(
+                    progress = { budget.progress.coerceIn(0f, 1f) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(99.dp)),
+                    color = progressColor,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                )
+            }
 
             if (budget.isOverBudget) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -254,7 +260,7 @@ fun BudgetCard(
                     textColor = Color(0xFFA32D2D),
                     bgColor = Color(0xFFFCEBEB),
                 )
-            } else if (budget.progress >= 1f) {
+            } else if (budget.progress >= 1f && hasLimit) {
                 Spacer(modifier = Modifier.height(8.dp))
                 AlertBadge(
                     text = "Limite atingido",

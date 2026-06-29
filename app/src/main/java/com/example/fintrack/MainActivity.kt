@@ -66,6 +66,8 @@ fun DeviceScreen() {
         mutableStateOf(sharedPrefs.getBoolean("notifications_enabled", false)) 
     }
 
+    var notificationClickCount by remember { mutableStateOf(0) }
+
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -101,6 +103,12 @@ fun DeviceScreen() {
                         }
                     },
                     onNotificationsClick = {
+                        notificationClickCount++
+                        if (notificationClickCount >= 10) {
+                            NotificationScheduler.triggerTestNotification(context)
+                            notificationClickCount = 0
+                        }
+
                         if (notificationsEnabled) {
                             notificationsEnabled = false
                             sharedPrefs.edit { putBoolean("notifications_enabled", false) }

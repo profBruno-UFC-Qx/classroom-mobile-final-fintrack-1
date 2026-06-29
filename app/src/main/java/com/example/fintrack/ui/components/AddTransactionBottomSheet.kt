@@ -49,6 +49,7 @@ import java.time.LocalDate
 @Composable
 fun AddTransactionBottomSheet(
     transaction : Transaction? = null,
+    defaultDate : LocalDate? = null,
     onDismiss : () -> Unit,
     onConfirm : (Transaction) -> Unit
 ) {
@@ -58,7 +59,7 @@ fun AddTransactionBottomSheet(
     var amount           by remember { mutableStateOf(transaction?.amount?.toString() ?: "") }
     var type             by remember { mutableStateOf(transaction?.type ?: TransactionType.EXPENSE) }
     var category         by remember { mutableStateOf(transaction?.category ?: TransactionCategory.OTHER) }
-    var date             by remember { mutableStateOf(transaction?.date ?: LocalDate.now()) }
+    var date             by remember { mutableStateOf(transaction?.date ?: defaultDate ?: LocalDate.now()) }
     var categoryExpanded by remember { mutableStateOf(false) }
 
     ModalBottomSheet(

@@ -225,8 +225,18 @@ private fun HomeContent(
         }
 
         if (showBottomSheet) {
+            val defaultDate = if (transactionToEdit == null) {
+                val now = LocalDate.now()
+                if (uiState.selectedDate.year == now.year && uiState.selectedDate.month == now.month) {
+                    now
+                } else {
+                    uiState.selectedDate.atDay(1)
+                }
+            } else null
+
             AddTransactionBottomSheet(
                 transaction = transactionToEdit,
+                defaultDate = defaultDate,
                 onDismiss = {
                     showBottomSheet = false
                     transactionToEdit = null
